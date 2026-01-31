@@ -53,11 +53,3 @@ project_name: cartographer3d-plugin
 is_system_service: False
 managed_services: klipper
 info_tags: desc=Cartographer Plugin
-
-# Crowsnest update_manager entry
-[update_manager crowsnest]
-type: git_repo
-path: ~/crowsnest
-origin: https://github.com/mainsail-crew/crowsnest.git
-managed_services: crowsnest
-install_script: tools/pkglist.sh
