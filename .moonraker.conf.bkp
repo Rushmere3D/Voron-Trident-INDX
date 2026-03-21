@@ -69,3 +69,7 @@ primary_branch = main
 managed_services = sonar
 system_dependencies = resources/system-dependencies.json
 
+[spoolman]
+server = http://192.168.1.148:7912/
+sync_rate = 5
+

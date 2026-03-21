@@ -70,10 +70,3 @@ origin: https://github.com/mainsail-crew/sonar.git
 primary_branch: main
 managed_services: sonar
 system_dependencies: resources/system-dependencies.json
-
-[spoolman]
-server: http://192.168.1.148:7912/ #http://spoolman.local:7912/
-#   URL to the Spoolman instance. This parameter must be provided.
-sync_rate: 5
-#   The interval, in seconds, between sync requests with the
-#   Spoolman server.  The default is 5.
