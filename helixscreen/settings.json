@@ -13,7 +13,8 @@
     "dim_sec": 0,
     "drm_device": "",
     "gcode_render_mode": 3,
-    "sleep_sec": 600,
+    "screensaver_type": 0,
+    "sleep_sec": 0,
     "sleep_while_printing": false,
     "time_format": 1
   },
@@ -134,7 +135,7 @@
             "temperature_sensor _5V_Monitor",
             "temperature_sensor _24V_Monitor"
           ],
-          "timestamp": "2026-03-29T12:25:44Z"
+          "timestamp": "2026-03-29T12:55:13Z"
         },
         "optional": []
       },
@@ -483,6 +484,11 @@
     "estop_require_confirmation": false
   },
   "sounds_enabled": true,
+  "standard_macros": {
+    "quick_button_1": "bed_mesh",
+    "quick_button_3": "load_filament",
+    "quick_button_4": "unload_filament"
+  },
   "theme": {
     "preset": 0
   },
