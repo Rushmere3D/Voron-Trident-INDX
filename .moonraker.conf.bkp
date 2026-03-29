@@ -73,3 +73,9 @@ system_dependencies = resources/system-dependencies.json
 server = http://192.168.1.148:7912/
 sync_rate = 5
 
+[update_manager helixscreen]
+type = web
+channel = stable
+repo = prestonbrown/helixscreen
+path = /home/pi/helixscreen
+
