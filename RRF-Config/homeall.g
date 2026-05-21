@@ -5,8 +5,7 @@
 
 M98 P"/sys/homex.g"
 M98 P"/sys/homey.g"
-;M98 P"/sys/homez.g"
-
+M98 P"/sys/homez.g"
 
 ; increase Z
 ; G91 ; relative positioning
@@ -20,5 +19,5 @@ M98 P"/sys/homey.g"
 ; G90 ; absolute positioning
 
 ; home Z
-G92 Z0 ; set Z=0
-M118 L1 P0 S"Warning: Z is NOT homed but its position has been set to 0."
+; G92 Z0 ; set Z=0
+; M118 L1 P0 S"Warning: Z is NOT homed but its position has been set to 0."

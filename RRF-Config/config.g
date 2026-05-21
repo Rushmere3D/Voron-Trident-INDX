@@ -67,7 +67,7 @@ M201 E2000                                          ; set accelerations (mm/s^2)
 ;==================================                 ;
 ; Axis Limits                                       ;
 ;==================================                 ;
-M208 X0:250 Y0:250 Z0:240                           ; set minimum and maximum axis limits
+M208 X0:250 Y0:257 Z0:240                           ; set minimum and maximum axis limits
 
 ;==================================                 ;
 ; Speeds                                            ;
@@ -83,18 +83,24 @@ M906 X1000 Y1000 Z700                               ; set axis driver currents
 M906 I30                                            ; set motor current idle factor
 M84 S30                                             ; set motor current idle timeout
 
+;==================================                 ;
+; Probe                                             ;
+;==================================                 ; X/Y endstop on Voron pcb w/cable X+gnd to io1 Y to io2 -No voltage
+M558 K0 P5 C"io1.in" H5 F600:200 T12000             ; configure digital probe via slot #0
+G31 P500 X0 Y25 Z0.7                                ; set Z probe trigger value, offset and trigger height
+M671 X-50:125:300 Y18:298:18 S5                     ; define positions of Z leadscrews or bed levelling screws -VORON Trident 350 bed.
 
 ;==================================                 ;
 ; Endstops                                          ;
 ;==================================                 ; X/Y endstop on Voron pcb w/cable X+gnd to io1 Y to io2 -No voltage
 M574 S1 X2 P"io5.in"                                ; configure X axis endstop
 M574 S1 Y2 P"io6.in"                                ; configure Y axis endstop
-M574 Z0                                             ; configure Z axis endstop
+M574 S2 Z1                                          ; configure Z axis endstop
 
 ;==================================                 ;
 ; Mesh Bed Compensation                             ;
 ;==================================                 ;
-M557 X25:175 Y25:175 S40:40                         ; define grid for mesh bed compensation
+M557 X20:230 Y25:220 P5:5                           ; define grid for mesh bed compensation
 
 ;==================================                                     ;
 ; Sensors                                                               ;
@@ -137,22 +143,22 @@ M563 P0 D0 H1 F0                                    ; create tool #0
 M568 P0 R0 S0                                       ; set initial tool #0 active and standby temperatures to 0C
 
 M563 P1 D0 H1 F0                                    ; create tool #1
-M568 P0 R0 S0                                       ; set initial tool #1 active and standby temperatures to 0C
+M568 P1 R0 S0                                       ; set initial tool #1 active and standby temperatures to 0C
 
 M563 P2 D0 H1 F0                                    ; create tool #2
-M568 P0 R0 S0                                       ; set initial tool #2 active and standby temperatures to 0C
+M568 P2 R0 S0                                       ; set initial tool #2 active and standby temperatures to 0C
 
 M563 P3 D0 H1 F0                                    ; create tool #3
-M568 P0 R0 S0                                       ; set initial tool #3 active and standby temperatures to 0C
+M568 P3 R0 S0                                       ; set initial tool #3 active and standby temperatures to 0C
 
 M563 P4 D0 H1 F0                                    ; create tool #4
-M568 P0 R0 S0                                       ; set initial tool #4 active and standby temperatures to 0C
+M568 P4 R0 S0                                       ; set initial tool #4 active and standby temperatures to 0C
 
 M563 P5 D0 H1 F0                                    ; create tool #5
-M568 P0 R0 S0                                       ; set initial tool #5 active and standby temperatures to 0C
+M568 P5 R0 S0                                       ; set initial tool #5 active and standby temperatures to 0C
 
 M563 P6 D0 H1 F0                                    ; create tool #6
-M568 P0 R0 S0                                       ; set initial tool #6 active and standby temperatures to 0C
+M568 P6 R0 S0                                       ; set initial tool #6 active and standby temperatures to 0C
 
 ;==================================                 ;
 ; Lights                                            ;
@@ -176,3 +182,4 @@ T-1                                                 ; select first tool
 G29 S2							    	            ; Disable mesh
 M912 P0 S-6 							            ; Calibrate MCU Temperature
 M501									            ; Call config_override.g
+M98 P"/macros/03_Light 25%"
