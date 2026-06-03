@@ -5,13 +5,44 @@
 
 ; G92 Z0 ; set Z=0
 ; M118 L1 P0 S"Warning: Z is NOT homed but its position has been set to 0."
-; increase Z
-G91                                    ; relative positioning
-G1 H2 Z5                               ; move Z relative to current position to avoid dragging nozzle over the bed
-G90                                    ; absolute positioning
 
-; home Z
-var xCenter = move.axes[0].min + (move.axes[0].max - move.axes[0].min) / 2 - sensors.probes[0].offsets[0]
-var yCenter = move.axes[1].min + (move.axes[1].max - move.axes[1].min) / 2 - sensors.probes[0].offsets[1]
-G1 X{var.xCenter} Y{var.yCenter} F6000 ; go to bed centre
-G30                                    ; probe the bed
+
+; ; increase Z
+; G91                                    ; relative positioning
+; G1 H2 Z5                               ; move Z relative to current position to avoid dragging nozzle over the bed
+; G90                                    ; absolute positioning
+
+; ; home Z
+; var xCenter = move.axes[0].min + (move.axes[0].max - move.axes[0].min) / 2 - sensors.probes[0].offsets[0]
+; var yCenter = move.axes[1].min + (move.axes[1].max - move.axes[1].min) / 2 - sensors.probes[0].offsets[1]
+; G1 X{var.xCenter} Y{var.yCenter} F12000 ; go to bed centre
+; G30                                    ; probe the bed
+
+; Step 0: move to a safe probing position      
+M564 H0                    ; unlock movement 
+G91                        ; relative positioning
+G1 H0 Z30 F6000            ; lift Z a bit to ensure we arent too close to the bed -- H2 is outdated and not used anymore. H1 respects endstops, H0 ignores them.
+G90                        ; absolute positioning
+G1 H0 X125 Y125 F10000     ; move probe to bed center
+M913 Z55                   ; 50% Z motor current to reduce damage/intensity of impact  
+ 
+; Step 1: do a rough contact-free measurement to get *kinda close* to bed
+M98 P"/macros/szp_mode_normal.g"
+; set a safe Z trigger height to trigger when the bed is coming close but safely not touching. omit XY, these were defined in config.g!
+; Z and P values are important here: These relate "Probe value [P] of 8850 relates to [Z] offset of 6mm".
+; Get your probe's P value by moving to Z=6 manually after calibrating as described in szp_mode_normal.g, and read the value reported in DWC then.
+; if szp_mode_normal.g is modified, these values must be updated too!
+G31 K0 Z6 P14155            
+G30 K0 S1                 ; execute Z homing to ensure printhead is close to bed
+ 
+; Step 2: we should now be ~6mm above the bed. TIme to do the fine tuning!
+M98 P"/macros/szp_mode_touch.g"
+G30 K0 S1                  ; execute contact probing and set Z
+G91                        ; relative positioning
+G1 Z3                      ; move up a bit
+G90                        ; absolute positioning
+ 
+; FInalization
+M564 H1                     ; re-lock movement 
+M913 Z100                   ; reset Z motor current to 100%  
+ 

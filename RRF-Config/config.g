@@ -43,10 +43,10 @@ M569 P0.3 S0 D3                                     ; driver 0.3 goes forwards (
 M569 P0.4 S0 D3                                     ; driver 0.4 goes forwards (Z axis) using default driver timings in Stealthchop
 
 ; E axis _____                                      ;
-;        |0.6|                                      ;
+;       |124.0|                                     ;
 ;         ---                                       ;
 ;         \ /                                       ;
-M569 P0.6 S1 D2                                     ; driver 0.6 goes forwards (extruder 0) using default driver timings in Spreadcycle
+M569 P124.0 S1 D2                                   ; driver 124.0 goes backwards (extruder 0) using default driver timings in Spreadcycle
 ;M569 P0.7 S1 D2                                    ; driver 0.6 goes forwards (extruder 0) using default driver timings in Spreadcycle
 
 M584 X0.0 Y0.1 Z0.2:0.3:0.4                         ; set axis mapping
@@ -56,10 +56,10 @@ M92 X80 Y80 Z400                                    ; configure steps per mm
 ;==================================                 ;
 ; Extruders                                         ;
 ;==================================                 ;
-M584 E0.6                                           ; set extruder mapping
+M584 E124.0                                         ; set extruder mapping
 M350 E16 I1                                         ; configure microstepping with interpolation
 M906 E700                                           ; set extruder driver currents
-M92 E420                                            ; configure steps per mm
+M92 E720                                            ; configure steps per mm
 M566 E300                                           ; set maximum instantaneous speed changes (mm/min)
 M203 E7200                                          ; set maximum speeds (mm/min)
 M201 E2000                                          ; set accelerations (mm/s^2)
@@ -74,7 +74,7 @@ M208 X0:250 Y0:257 Z0:240                           ; set minimum and maximum ax
 ;==================================                 ;
 M566 X500 Y500 Z120                                 ; set maximum instantaneous speed changes (mm/min)
 M203 X18000.00 Y18000.00 Z800.00                    ; set maximum speeds (mm/min)
-M201 X8000.00 Y8000.00 Z350.00                      ; set accelerations (mm/s^2)
+M201 X5000.00 Y5000.00 Z250.00                      ; set accelerations (mm/s^2)
 M906 X1000 Y1000 Z700                               ; set axis driver currents
 
 ;==================================                 ;
@@ -84,29 +84,36 @@ M906 I30                                            ; set motor current idle fac
 M84 S30                                             ; set motor current idle timeout
 
 ;==================================                 ;
-; Probe                                             ;
+; Scanning Z probe                                  ;
 ;==================================                 ; X/Y endstop on Voron pcb w/cable X+gnd to io1 Y to io2 -No voltage
-M558 K0 P5 C"io1.in" H5 F600:200 T12000             ; configure digital probe via slot #0
-G31 P500 X0 Y25 Z0.7                                ; set Z probe trigger value, offset and trigger height
-M671 X-50:125:300 Y18:298:18 S5                     ; define positions of Z leadscrews or bed levelling screws -VORON Trident 350 bed.
+;M558 K0 P5 C"io1.in" H5 F800:200 T12000            ; configure digital probe via slot #0
+M558 K0 P11 C"124.i2c.ldc1612" F18000 T9000         ; K0 = primary probe, K1 = secondary probe
+G31 K0 X0 Y25 Z2.00                                 ; set Z probe trigger value, offset and trigger height
+M671 X-50:125:300 Y18:298:18 S5                     ; define positions of Z leadscrews or bed levelling screws -VORON Trident 250 bed.
+M98 P"/macros/szp_mode_normal.g"                    ; this is optional, just here to calm you down when opening DWC, which would show probe 999999 values otherwise.
 
 ;==================================                 ;
 ; Endstops                                          ;
 ;==================================                 ; X/Y endstop on Voron pcb w/cable X+gnd to io1 Y to io2 -No voltage
 M574 S1 X2 P"io5.in"                                ; configure X axis endstop
 M574 S1 Y2 P"io6.in"                                ; configure Y axis endstop
-M574 S2 Z1                                          ; configure Z axis endstop
+;M574 S2 Z1                                         ; configure Z axis endstop
 
 ;==================================                 ;
 ; Mesh Bed Compensation                             ;
 ;==================================                 ;
-M557 X20:230 Y25:220 P5:5                           ; define grid for mesh bed compensation
+M557 X20:230 Y25:240 P5:5                           ; define grid for mesh bed compensation
 
 ;==================================                                     ;
-; Sensors                                                               ;
+; Temp Sensors                                                          ;
 ;==================================                                     ;
-;M308 S1 P"temp1" Y"thermistor" A"Chamber Top" T100000 B3950            ; configure sensor #1
-M308 S2 P"temp2" Y"thermistor" A"Chamber Bottom" T100000 B3950          ; configure sensor #2
+M308 S2 P"temp1" Y"thermistor" A"Chamber Top" T100000 B3950             ; configure sensor #1
+M308 A"SZP coil" S10 Y"thermistor" P"124.temp1" T100000 B4092           ; thermistor on PCB/coil
+
+;==================================                                     ;
+; Accelerometer                                                         ;
+;==================================                                     ;
+M955 P124.0 I16
 
 ;==================================                                     ;
 ; Heaters                                                               ;
@@ -119,8 +126,8 @@ M140 H0                                                                 ; map he
 M143 H0 S120                                                            ; set temperature limit for heater 0 to 120C
 
 ; Tool 0 heater
-M308 S1 P"temp1" Y"thermistor" A"Smart Head" T100000 B4725 C7.06e-8     ; configure sensor 1 as thermistor on pin temp1
-M950 H1 C"out0" T1                                      	            ; create nozzle heater output on out1 and map it to sensor 1
+M308 S1 P"124.temp0" Y"thermistor" A"Smart Head" T100000 B4725 C7.06e-8 ; configure sensor 1 as thermistor on pin temp1
+M950 H1 C"124.out0" T1                                      	        ; create nozzle heater output on out1 and map it to sensor 1
 M307 H1 B0 S1.00                                         		      	; disable bang-bang mode for heater  and set PWM limit
 M143 H1 S300                                              		      	; set temperature limit for heater 1 to 300C
 
@@ -130,11 +137,11 @@ M143 H1 S300                                              		      	; set tempera
 M950 F0 C"out6" Q2000                               ; create fan #0
 M106 P0 S0 H-1 L0.15 B0.1 C"CPAP Fan"               ; configure fan #0
 
-; M950 F1 C"out4"                                   ; create fan #1
-; M106 P1 S0 X1 B0.1 H1 T45                         ; configure fan #1
+M950 F1 C"124.out2"                                 ; create fan #1
+M106 P1 S0 X1 B0.1 H1 T45                           ; configure fan #1
 
 M950 F2 C"out5"                                     ; GDSTIME 24v out 5
-M106 P2 H0 L0.8 T25:100 C"Electronics Fans"         ; configure fan #2
+M106 P2 H0 L0.8 T35:100 C"Electronics Fans"         ; configure fan #2
 
 ;==================================                 ;
 ; Tools                                             ;
@@ -142,23 +149,23 @@ M106 P2 H0 L0.8 T25:100 C"Electronics Fans"         ; configure fan #2
 M563 P0 D0 H1 F0                                    ; create tool #0
 M568 P0 R0 S0                                       ; set initial tool #0 active and standby temperatures to 0C
 
-M563 P1 D0 H1 F0                                    ; create tool #1
-M568 P1 R0 S0                                       ; set initial tool #1 active and standby temperatures to 0C
+; M563 P1 D0 H1 F0                                    ; create tool #1
+; M568 P1 R0 S0                                       ; set initial tool #1 active and standby temperatures to 0C
 
-M563 P2 D0 H1 F0                                    ; create tool #2
-M568 P2 R0 S0                                       ; set initial tool #2 active and standby temperatures to 0C
+; M563 P2 D0 H1 F0                                    ; create tool #2
+; M568 P2 R0 S0                                       ; set initial tool #2 active and standby temperatures to 0C
 
-M563 P3 D0 H1 F0                                    ; create tool #3
-M568 P3 R0 S0                                       ; set initial tool #3 active and standby temperatures to 0C
+; M563 P3 D0 H1 F0                                    ; create tool #3
+; M568 P3 R0 S0                                       ; set initial tool #3 active and standby temperatures to 0C
 
-M563 P4 D0 H1 F0                                    ; create tool #4
-M568 P4 R0 S0                                       ; set initial tool #4 active and standby temperatures to 0C
+; M563 P4 D0 H1 F0                                    ; create tool #4
+; M568 P4 R0 S0                                       ; set initial tool #4 active and standby temperatures to 0C
 
-M563 P5 D0 H1 F0                                    ; create tool #5
-M568 P5 R0 S0                                       ; set initial tool #5 active and standby temperatures to 0C
+; M563 P5 D0 H1 F0                                    ; create tool #5
+; M568 P5 R0 S0                                       ; set initial tool #5 active and standby temperatures to 0C
 
-M563 P6 D0 H1 F0                                    ; create tool #6
-M568 P6 R0 S0                                       ; set initial tool #6 active and standby temperatures to 0C
+; M563 P6 D0 H1 F0                                    ; create tool #6
+; M568 P6 R0 S0                                       ; set initial tool #6 active and standby temperatures to 0C
 
 ;==================================                 ;
 ; Lights                                            ;
@@ -166,19 +173,22 @@ M568 P6 R0 S0                                       ; set initial tool #6 active
 M950 F5 C"out1" Q500                                ;
 M106 P5 H-1 L64.0 X192.0 C"Lights"                  ;
 
-M950 E0 C"led" U8                                   ; create a RGB Neopixel LED strip on the LED port and set SPI frequency to 3MHz
-M150 E0 R0 U0 B255 P128 S8 F0
+M950 E0 C"124.rgbled" T1
+M150 E0 R0 U0 B128 P128 S3 F0
+
+M950 E1 C"led" U8                                   ; create a RGB Neopixel LED strip on the LED port and set SPI frequency to 3MHz
+M150 E1 R0 U0 B255 P128 S8 F0
 
 ;==================================                 ;
-; Sensors                                           ;
+; Board Sensors                                     ;
 ;==================================                 ;
 M308 S3 A"Big Dipper" Y"mcu-temp"                   ; Sensor 3 Built in temp monitor in STM32H7
-
+M308 S4 A"SHT36" Y"mcu-temp" P"124.dummy"          ; Sensor 4 Built in temp monitor in RP2040
 
 ;==================================                 ;
 ; Miscellaneous                                     ;
 ;==================================                 ;
-T-1                                                 ; select first tool
+T0                                                  ; select first tool
 G29 S2							    	            ; Disable mesh
 M912 P0 S-6 							            ; Calibrate MCU Temperature
 M501									            ; Call config_override.g
