@@ -16,7 +16,7 @@ G4 S5   				                            ; wait 5s for expansion boards to start
 ;==================================                 ;
 ; Display                                           ;
 ;==================================                 ;
-M575 P1 S1 B57600                                   ; configure PanelDue support
+M575 P2 S1 B57600                                   ; configure PanelDue support
 
 ;==================================                 ;
 ; Network                                           ;
@@ -87,6 +87,7 @@ M84 S30                                             ; set motor current idle tim
 ; Scanning Z probe                                  ;
 ;==================================                 ; X/Y endstop on Voron pcb w/cable X+gnd to io1 Y to io2 -No voltage
 ;M558 K0 P5 C"io1.in" H5 F800:200 T12000            ; configure digital probe via slot #0
+
 M558 K0 P11 C"124.i2c.ldc1612" F18000 T9000         ; K0 = primary probe, K1 = secondary probe
 G31 K0 X0 Y25 Z2.00                                 ; set Z probe trigger value, offset and trigger height
 M671 X-50:125:300 Y18:298:18 S5                     ; define positions of Z leadscrews or bed levelling screws -VORON Trident 250 bed.
@@ -126,7 +127,7 @@ M140 H0                                                                 ; map he
 M143 H0 S120                                                            ; set temperature limit for heater 0 to 120C
 
 ; Tool 0 heater
-M308 S1 P"124.temp0" Y"thermistor" A"Smart Head" T100000 B4725 C7.06e-8 ; configure sensor 1 as thermistor on pin temp1
+M308 S1 P"124.temp0" Y"thermistor" A"SB CPAP" T100000 B4725 C7.06e-8    ; configure sensor 1 as thermistor on pin temp1
 M950 H1 C"124.out0" T1                                      	        ; create nozzle heater output on out1 and map it to sensor 1
 M307 H1 B0 S1.00                                         		      	; disable bang-bang mode for heater  and set PWM limit
 M143 H1 S300                                              		      	; set temperature limit for heater 1 to 300C
@@ -134,14 +135,14 @@ M143 H1 S300                                              		      	; set tempera
 ;==================================                 ;
 ; Fans                                              ;
 ;==================================                 ;
-M950 F0 C"out6" Q2000                               ; create fan #0
-M106 P0 S0 H-1 L0.15 B0.1 C"CPAP Fan"               ; configure fan #0
+M950 F0 C"io1.out" Q2000                            ; create fan #0
+M106 P0 C"CPAP Fan" S0 H-1 L0.20 X1.0 B0.1          ; configure fan #0
 
-M950 F1 C"124.out2"                                 ; create fan #1
-M106 P1 S0 X1 B0.1 H1 T45                           ; configure fan #1
+M950 F1 C"124.out2"                               ; create fan #1
+M106 P1 S0 X1 B0.1 H1 T45                         ; configure fan #1
 
-M950 F2 C"out5"                                     ; GDSTIME 24v out 5
-M106 P2 H0 L0.8 T35:100 C"Electronics Fans"         ; configure fan #2
+M950 F2 C"out5"                                   ; GDSTIME 24v out 5
+M106 P2 H0 L0.8 T35:100 C"Electronics Fans"       ; configure fan #2
 
 ;==================================                 ;
 ; Tools                                             ;
@@ -149,29 +150,11 @@ M106 P2 H0 L0.8 T35:100 C"Electronics Fans"         ; configure fan #2
 M563 P0 D0 H1 F0                                    ; create tool #0
 M568 P0 R0 S0                                       ; set initial tool #0 active and standby temperatures to 0C
 
-; M563 P1 D0 H1 F0                                    ; create tool #1
-; M568 P1 R0 S0                                       ; set initial tool #1 active and standby temperatures to 0C
-
-; M563 P2 D0 H1 F0                                    ; create tool #2
-; M568 P2 R0 S0                                       ; set initial tool #2 active and standby temperatures to 0C
-
-; M563 P3 D0 H1 F0                                    ; create tool #3
-; M568 P3 R0 S0                                       ; set initial tool #3 active and standby temperatures to 0C
-
-; M563 P4 D0 H1 F0                                    ; create tool #4
-; M568 P4 R0 S0                                       ; set initial tool #4 active and standby temperatures to 0C
-
-; M563 P5 D0 H1 F0                                    ; create tool #5
-; M568 P5 R0 S0                                       ; set initial tool #5 active and standby temperatures to 0C
-
-; M563 P6 D0 H1 F0                                    ; create tool #6
-; M568 P6 R0 S0                                       ; set initial tool #6 active and standby temperatures to 0C
-
 ;==================================                 ;
 ; Lights                                            ;
 ;==================================                 ;
-M950 F5 C"out1" Q500                                ;
-M106 P5 H-1 L64.0 X192.0 C"Lights"                  ;
+M950 F5 C"out1" Q500                              ;
+M106 P5 H-1 L64.0 X192.0 C"Lights"                ;
 
 M950 E0 C"124.rgbled" T1
 M150 E0 R0 U0 B128 P128 S3 F0
@@ -183,7 +166,7 @@ M150 E1 R0 U0 B255 P128 S8 F0
 ; Board Sensors                                     ;
 ;==================================                 ;
 M308 S3 A"Big Dipper" Y"mcu-temp"                   ; Sensor 3 Built in temp monitor in STM32H7
-M308 S4 A"SHT36" Y"mcu-temp" P"124.dummy"          ; Sensor 4 Built in temp monitor in RP2040
+M308 S4 A"SHT36" Y"mcu-temp" P"124.dummy"           ; Sensor 4 Built in temp monitor in RP2040
 
 ;==================================                 ;
 ; Miscellaneous                                     ;
@@ -192,4 +175,5 @@ T0                                                  ; select first tool
 G29 S2							    	            ; Disable mesh
 M912 P0 S-6 							            ; Calibrate MCU Temperature
 M501									            ; Call config_override.g
-M98 P"/macros/03_Light 25%"
+
+M98 P"/macros/05_Light 25%"

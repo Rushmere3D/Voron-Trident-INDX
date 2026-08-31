@@ -21,7 +21,7 @@
 ; Step 0: move to a safe probing position      
 M564 H0                    ; unlock movement 
 G91                        ; relative positioning
-G1 H0 Z30 F6000            ; lift Z a bit to ensure we arent too close to the bed -- H2 is outdated and not used anymore. H1 respects endstops, H0 ignores them.
+G1 H0 Z20 F6000            ; lift Z a bit to ensure we arent too close to the bed -- H2 is outdated and not used anymore. H1 respects endstops, H0 ignores them.
 G90                        ; absolute positioning
 G1 H0 X125 Y125 F10000     ; move probe to bed center
 M913 Z55                   ; 50% Z motor current to reduce damage/intensity of impact  
