@@ -161,7 +161,7 @@ M150 E0 R0 U0 B128 P128 S1 F1                       ; set the voron symbol blue
 M150 E0 R128 B128 U128 P128 S2 F0                   ; set nozzles leds white
 
 M950 E1 C"led" U8                                   ; create a RGB Neopixel LED strip on the LED port and set SPI frequency to 3MHz
-M150 E1 R0 U0 B255 P128 S8 F0
+M150 E1 R0 U0 B255 P128 S8 F0                       ; set underglow leds to blue
 
 ;==================================                 ;
 ; Board Sensors                                     ;
